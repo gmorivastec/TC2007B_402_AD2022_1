@@ -1,5 +1,6 @@
 package mx.itesm.clase1pm
 
+import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,11 +10,42 @@ import android.widget.TextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 
 class MainActivity : AppCompatActivity() {
 
+    // si usan el objeto en varios lugares asegúrense de declararlo a nivel clase
     private lateinit var editText: EditText
 
+    // para poder escuchar valores que regresan de una actividad abierta
+    // necesito un launcher
+    val lanzador = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+
+        Toast.makeText(this, "RESULTADO VA AQUI", Toast.LENGTH_SHORT).show()
+
+        // 1ero - revisar código
+        if(result.resultCode == Activity.RESULT_OK) {
+
+            val datos = result.data
+
+            // trabajar con nulos / nullable
+
+            // verificación de nulidad en objetos nuleable
+            // 1era - if
+            // usarla cuando varias líneas dependen de un objeto que pueda ser nuleable
+            /*
+            if(datos != null){
+                Toast.makeText(this, datos.getStringExtra("resultadoNombre"), Toast.LENGTH_SHORT).show()
+            }*/
+
+            // 2da - safe call
+            Toast.makeText(this, datos?.getStringExtra("resultadoNombre"), Toast.LENGTH_SHORT).show()
+            var hola = "tu califiacion es"
+            Toast.makeText(this, "$hola : ${datos?.getIntExtra("resultadoCalificacion", -1)}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // si necesitan obtener referencia a un widget hay que hacerlo aquí
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -103,8 +135,12 @@ class MainActivity : AppCompatActivity() {
         intent.putExtra("nombre", editText.text.toString())
         intent.putExtra("calificacion", 100)
 
-        startActivity(intent)
+        //startActivity(intent)
 
+        // OJO - este ya está obsoleto
+        // startActivityForResult()
+
+        lanzador.launch(intent)
 
     }
 }
