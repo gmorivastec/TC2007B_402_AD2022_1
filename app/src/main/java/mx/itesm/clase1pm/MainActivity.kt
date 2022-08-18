@@ -143,4 +143,10 @@ class MainActivity : AppCompatActivity() {
         lanzador.launch(intent)
 
     }
+
+    fun abrirDb(view : View?){
+
+        val intent = Intent(this, DBActivity::class.java)
+        startActivity(intent)
+    }
 }
